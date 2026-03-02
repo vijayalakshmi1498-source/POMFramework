@@ -18,7 +18,10 @@ public class LoginTest extends BaseTest//BaseTest la irukkura @BeforeMethod run 
 							.enterpassword("SuperSecretPassword!")//Same LoginPage object return aagum
 							.ClickLogin();//method return type HomePage
 		
-		Assert.assertTrue(home.isLoginSuccessful());//Success message visible ah irundha true eg Test PASS
+		//Assert.assertTrue(home.isLoginSuccessful());//Success message visible ah irundha true eg Test PASS
+		Assert.assertFalse(home.isLoginSuccessful(),"Forcing failure");//
+		
+		    }
 	}
 
-}
+

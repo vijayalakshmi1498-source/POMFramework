@@ -1,4 +1,10 @@
 package base;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import org.openqa.selenium.edge.EdgeDriver;
+import java.util.Properties;
+
 //Driver initialization Base class la maintain pannuren to avoid duplicate code.
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -10,18 +16,36 @@ public class BaseTest {
 	public WebDriver driver;
 	
 	@BeforeMethod
-	public void Setup()
+	public void Setup() throws IOException
 	{
-		ChromeOptions options = new ChromeOptions();
-		options.addArguments("--incognito");
-		driver = new ChromeDriver(options);
+		String env=System.getProperty("environment");// Get environment from Maven/Jenkins
+		if(env==null)//If no environment passed, default = qa
+		{
+			env="qa";
+		}
+		//Load respective property file
+		FileInputStream fis=new FileInputStream("config/config-"+ env +".properties");
+		Properties prop=new Properties();
+		prop.load(fis);
+		String browser=prop.getProperty("browser");//Get browser from property file
 		
-		//System.setProperty("webdriver.chrome.driver", "C:\\chromedriver-win64\\chromedriver.exe");
-		driver=new ChromeDriver();
-		driver.get("https://the-internet.herokuapp.com/login");
-		driver.manage().window().maximize();
+		//Launch browser based on property value
+		if(browser.equalsIgnoreCase("chrome"))
+		{
+			ChromeOptions options = new ChromeOptions();
+			options.addArguments("--incognito");
+			driver = new ChromeDriver(options);
+		}
+		else if(browser.equalsIgnoreCase("edge"))
+		{
+			driver=new EdgeDriver();
+		}
+		else
+			throw new RuntimeException("Browser not supported : " +browser);
 		
-	}
+	driver.get(prop.getProperty("url"));
+	driver.manage().window().maximize();
+}	
 	
 	@AfterMethod
 	public void teardown()
